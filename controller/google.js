@@ -20,7 +20,7 @@ var  passport = require('passport');
         });
 
         // pull in our app id and secret from our auth.js file
-        passport.use(new GoogleStrategy(googleConfig.googleAuth,function(access_token, tokenSecret, profile, done) {
+        passport.use(new GoogleStrategy(googleConfig.googleAuth, function(access_token, tokenSecret, profile, done) {
 
     		// asynchronous
     		process.nextTick(function() {

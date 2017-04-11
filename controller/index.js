@@ -1,21 +1,21 @@
-var express = require('express'),
-    router = express.Router();
-var  passport = require('passport');
+var express  = require('express');
+var router   = express.Router();
+var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy;
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var GoogleStrategy   = require('passport-google-oauth').OAuth2Strategy;
 
 var facebook = require('./facebook')(passport);  //configure facebook
-var google = require('./google')(passport);  //configure facebook
+var google   = require('./google')(passport);  //configure facebook
 
 router.use('/signUp',require('./signUp'));
 router.use('/login',require('./login'));
 
 router.use("/authenticate",require('./authenticate'));
 
-router.use("/authenticate/readTodo",require("./todo/readTodo"));
-router.use("/authenticate/createTodo",require("./todo/createTodo"));
-router.use("/authenticate/deleteTodo",require("./todo/deleteTodo"));
-router.use("/authenticate/updateTodo",require("./todo/updateTodo"));
+router.use("/todo/readTodo",require('./authenticate'),require("./todo/readTodo"));
+router.use("/todo/createTodo",require('./authenticate'),require("./todo/createTodo"));
+router.use("/todo/deleteTodo",require('./authenticate'),require("./todo/deleteTodo"));
+router.use("/todo/updateTodo",require('./authenticate'),require("./todo/updateTodo"));
 
 // Redirect the user to Facebook for authentication.  When complete,
 // Facebook will redirect the user back to the application at
@@ -31,12 +31,21 @@ router.use("/authenticate/updateTodo",require("./todo/updateTodo"));
   // authentication process by attempting to obtain an access token.  If
   // access was granted, the user will be logged in.  Otherwise,
   // authentication has failed.
+
 	router.get('/auth/facebook/callback',
 		passport.authenticate('facebook', {
 			successRedirect : '/',
 			failureRedirect : '/'
 		})
 	);
+
+	// router.get("/facebook/loginsuccess",function (req,res) {
+	// 	res.send("successful");
+	// });
+	//
+	// router.get("/facebook/loginfail",function (req,res) {
+	// 	res.send("failure");
+	// });
 
   // GET /auth/google
   //   Use passport.authenticate() as route middleware to authenticate the
@@ -54,59 +63,8 @@ router.use("/authenticate/updateTodo",require("./todo/updateTodo"));
   //   which, in this example, will redirect the user to the home page.
     router.get('/auth/google/callback',
       passport.authenticate('google', {
-        successRedirect : '/home',
-        failureRedirect: '/login'
+				successRedirect : '/',
+				failureRedirect : '/'
       }));
 
-
 module.exports = router;
-
-
-
-//var isAuthenticated = function (req, res, next) {
-// 	// if user is authenticated in the session, call the next() to call the next request handler
-// 	// Passport adds this method to request object. A middleware is allowed to add properties to
-// 	// request and response objects
-// 	if (req.isAuthenticated())
-// 		return next();
-// 	// if the user is not authenticated then redirect him to the login page
-// 	res.redirect('/');
-// };
-//
-//
-//
-// 	/* GET login page. */
-// 	router.get('/', function(req, res) {
-//     	// Display the Login page with any flash message, if any
-// 		res.render('index', { message: req.flash('message') });
-// 	});
-//
-// 	/* Handle Login POST */
-// 	router.post('/login', passport.authenticate('login', {
-// 		successRedirect: '/home',
-// 		failureRedirect: '/',
-// 		failureFlash : true
-// 	}));
-//
-// 	/* GET Registration Page */
-// 	router.get('/signup', function(req, res){
-// 		res.render('register',{message: req.flash('message')});
-// 	});
-//
-// 	/* Handle Registration POST */
-// 	router.post('/signup', passport.authenticate('signup', {
-// 		successRedirect: '/home',
-// 		failureRedirect: '/signup',
-// 		failureFlash : true
-// 	}));
-//
-// 	/* GET Home Page */
-// 	router.get('/home', isAuthenticated, function(req, res){
-// 		res.render('home', { user: req.user });
-// 	});
-//
-// 	/* Handle Logout */
-// 	router.get('/signout', function(req, res) {
-// 		req.logout();
-// 		res.redirect('/');
-// 	});

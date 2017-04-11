@@ -6,6 +6,8 @@ var express = require('express'),
 
 // route middleware to verify a token
 router.use(function(req, res, next) {
+  console.log(req.isAuthenticated());
+  console.log(req.user);
 
   // check header or url parameters or post parameters for token
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -17,7 +19,7 @@ router.use(function(req, res, next) {
     // verifies secret and checks exp
     jwt.verify(token, SECRET, function(err, decoded) {
       if (err) {
-        console.log();
+        // console.log();
         return res.json({ success: false, message: 'Failed to authenticate token.' });
       } else {
         // if everything is good, save to request for use in other routes
@@ -37,7 +39,5 @@ router.use(function(req, res, next) {
 
   }
 });
-
-
 
 module.exports = router;

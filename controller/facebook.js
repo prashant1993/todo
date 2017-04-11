@@ -19,11 +19,12 @@ module.exports = function(passport) {
     });
 
     // pull in our app id and secret from our auth.js file
-    passport.use('facebook', new FacebookStrategy(fbConfig.facebookAuth,function(access_token, refresh_token, profile, done) {
+    passport.use('facebook', new FacebookStrategy(fbConfig.facebookAuth, function(access_token, refresh_token ,profile, done) {
 		// asynchronous
 		process.nextTick(function() {
 			// find the user in the database based on their facebook id
 	        User.findOne({ 'fb.id' : profile.id }, function(err, user) {
+            console.log(user);
 	        	// if there is an error, stop everything and return that
 	        	// ie an error connecting to the database
 	            if (err)

@@ -7,38 +7,58 @@ var SECRET     = new config().secret;     // creating object of class config
 // var SECRET     = config.secret;     // creating object of class config
 
 var User = require("../model/signUp");
-apiRoutes.post('/',function(req,res){
-  User.findOne({
-    "local.email":req.body.email,
-    "local.password":req.body.password
-  },function(err,user){
-    if(err) {
-       throw err;
-     }
 
-    if (!user) {
-            res.json({
-                authsuccess: false,
-                description: 'logging failed'
-            });
-         } else {
-             //16c. generate the token because we have the username and pasword
-             //matching
-            //  var token = jwt.sign(user, app.get('superSecret'), {
-            //        expiresIn: 1440 // expires in 24 hours
-            //      });
-            var userObj = user.toJSON();
-            console.log(userObj._id);
-            console.log(typeof userObj._id);
-                var token = jwt.sign({id:userObj._id}, SECRET, { expiresIn: 1000*30 });
-             //send the response to the caller with the accesstoken and data
-             //16d.
-             res.json({
-                 authsuccess: true,
-                 description: 'logging in Successfully',
-                 token:token
-             });
-         }
-     });
+  apiRoutes.post('/',function(req,res){
+    try {
+    // console.log(req.body);
+
+    req.checkBody("email", "Enter a valid email address.").isEmail();
+    req.checkBody("password", "Enter a valid password").matches(/^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/);
+
+    var errors = req.validationErrors();
+      if (errors) {
+          res.send(errors[0]);
+      return;
+      } else {
+    User.findOne({
+        "local.email":req.body.email,
+        "local.password":req.body.password
+      },function(err,user){
+        try {
+          if(err) throw err;
+        if (!user) {
+                  res.send({
+                  status: false,
+                  description: 'logging failed'
+              });
+           } else {
+              // console.log(user);
+              var userObj = user.toJSON();
+              // console.log(userObj._id);
+              // console.log(typeof userObj._id);
+              // generate the token because we have the username and pasword matching
+              var token = jwt.sign({id:userObj._id}, SECRET, { expiresIn: 1000*30 });
+               //send the response to the caller with the access token and data
+               res.send({
+                   ObjectId:userObj._id,
+                   status: true,
+                   description: 'logging in Successfully',
+                   token:token
+                  });
+                }
+        } catch (e) {
+          res.send({
+          status: false,
+          description: 'logging failed'
+      });
+    }
   });
+  }
+  } catch(e) {
+        res.send({
+          status: false,
+          description: 'logging failed'
+        });
+  }
+});
 module.exports = apiRoutes;

@@ -22,7 +22,7 @@
   "clientSecret": "{fvdPI32BVnDzKb4_7Wal4nSJ}",
   "callbackURL": "http://localhost:8088/auth/google/callback",
   "authPath": "/auth/google",
-  "callbackPath": "localhost:8088/auth/google/callback",
+  "callbackPath": "http://localhost:8088/auth/google/callback",
   "successRedirect": "/",
   "failureRedirect": "/login",
   "scope": ["email", "profile"],
